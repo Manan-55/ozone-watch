@@ -5,7 +5,6 @@
 ---
 
 ## 🚀 Live Demo
-👉 [Launch OzoneWatch App](#) ← add your Streamlit link here
 
 ---
 
