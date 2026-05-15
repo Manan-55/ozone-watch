@@ -1,133 +1,144 @@
-# 🌫️ OzoneWatch — Air Quality Risk Prediction System
+# OzoneWatch 🌿
 
-> A live end-to-end Machine Learning system that predicts dangerous ozone level days using real-time atmospheric data from Houston, TX.
+**Real-time Ozone Level Prediction System**
 
----
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-ozonewatch.streamlit.app-brightgreen?style=flat-square)](https://ozonewatch.streamlit.app)
+[![Python](https://img.shields.io/badge/Python-3.10+-blue?style=flat-square)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Built%20with-Streamlit-FF4B4B?style=flat-square)](https://streamlit.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
-## 🚀 Live Demo
-
-*Deployment link coming soon — build and share your own with Streamlit!*
-
----
-
-## 🎯 Problem Statement
-Houston, Texas records 60+ ozone alert days per year. Ground-level ozone causes serious respiratory issues and requires early warnings for public safety.
-
-**Goal:** Can we predict a dangerous ozone day before it happens using atmospheric weather readings?
+OzoneWatch is a machine learning–powered air quality monitoring system that predicts 8-hour average atmospheric ozone concentrations in real time. It integrates live weather data via the Open-Meteo API and provides interpretable predictions using SHAP explainability — making it useful for environmental agencies, health organizations, and researchers.
 
 ---
 
-## 📊 Dataset
-- **Source:** UCI ML Repository via OpenML
-- **Size:** 2534 days of atmospheric data from Houston, TX (1998-2004)
-- **Features:** 72 atmospheric measurements — temperature, wind speed, humidity, solar radiation, pressure
-- **Target:** Binary — Normal Day (0) or Ozone Day (1)
-- **Challenge:** Severe class imbalance — 94% Normal, 6% Ozone days
+## Features
+
+- **XGBoost Classifier** trained on 2,534 samples with 73 meteorological features
+- **SMOTE oversampling** to handle class imbalance in ozone event detection
+- **SHAP explainability** — highlights top contributing features (e.g., solar radiation V62) for each prediction
+- **Live weather integration** via Open-Meteo API (Houston, TX as default location)
+- **Threshold-tuned predictions** optimized for high recall (0.91) to minimize missed ozone alerts
+- **Streamlit web interface** — clean, interactive UI with no setup required for end users
 
 ---
 
-## 🔬 What I Did
+## Model Performance
 
-### 1. Exploratory Data Analysis
-- Discovered 94/6 class imbalance — making accuracy a misleading metric
-- Found multicollinearity among temperature features (V40-V44 correlation: 0.96-0.99)
-- Identified that ozone days cluster at higher temperatures (25-35°C) and lower wind speeds (0-3 km/h)
+| Metric    | Score |
+|-----------|-------|
+| Recall    | 0.91  |
+| Precision | —     |
+| F1        | —     |
 
-### 2. Data Preprocessing
-- Handled ARFF format conversion and missing value treatment
-- Applied **SMOTE** to balance training data from 127 → 1900 ozone samples
-
-### 3. Model Building & Comparison
-| Model | Precision | Recall | F1-Score |
-|---|---|---|---|
-| Logistic Regression | 0.27 | **0.91** | 0.42 |
-| Random Forest | 0.43 | 0.36 | 0.39 |
-| XGBoost | 0.36 | 0.42 | 0.39 |
-
-**Selected Logistic Regression** — highest recall (0.91) means only 3 out of 33 ozone days missed. For a public health system, missing a dangerous day is far costlier than a false alarm.
-
-### 4. Model Explainability
-- Implemented **SHAP values** to explain individual predictions
-- Identified solar radiation (V62) as the strongest predictor of ozone days
-
-### 5. Threshold Tuning
-- Optimized decision threshold from 0.5 → 0.91
-- Improved F1-score from 0.42 → 0.49 while maintaining acceptable recall
-
-### 6. Deployment
-- Built live web app using **Streamlit**
-- Integrated **Open-Meteo API** to fetch real-time Houston weather automatically
-- App predicts today's ozone risk using actual current atmospheric conditions
+> Recall was prioritized as the primary metric — in air quality monitoring, missing a real ozone event (false negative) is more costly than a false alarm.
 
 ---
 
-## 📈 Final Results
-- **Test Recall:** 91% (catches 30 out of 33 dangerous ozone days)
-- **Test Precision:** 27% (accepts false alarms to prioritize public safety)
-- **Key Insight:** Solar radiation is the strongest predictor, aligning with atmospheric science
-- **Deployment Status:** Ready for real-time predictions on current Houston weather
+## Architecture
+
+```mermaid
+graph TD
+    A["User Interface (Streamlit)"] --> B["app.py"];
+    B --> C["Load ML Model (model.pkl)"];
+    B --> D["Load Feature Preprocessor (features.pkl)"];
+    B --> E["Fetch Live Weather (Open-Meteo API)"];
+    E --> F["Preprocess Input Data"];
+    C --> G["Generate Prediction"];
+    D --> F;
+    F --> G;
+    G --> H["SHAP Explainability"];
+    H --> B;
+    G --> B;
+    B --> A;
+    I["ozone-level-8hr dataset (OpenML)"] --> J["ozone_watch.ipynb"];
+    J --> K["SMOTE + Feature Engineering"];
+    K --> L["XGBoost Training & Threshold Tuning"];
+    L --> C;
+    L --> D;
+```
 
 ---
 
-## 🛠️ Tech Stack
-![Python](https://img.shields.io/badge/Python-3.12-blue)
-![Scikit-learn](https://img.shields.io/badge/Scikit--learn-ML-orange)
-![Streamlit](https://img.shields.io/badge/Streamlit-Deployed-red)
-![XGBoost](https://img.shields.io/badge/XGBoost-Model-green)
+## Project Structure
 
-- **Language:** Python 3.12
-- **ML:** Scikit-learn, XGBoost, Imbalanced-learn
-- **Explainability:** SHAP
-- **Deployment:** Streamlit
-- **API:** Open-Meteo (real-time weather)
-- **Data:** Pandas, NumPy
-- **Visualization:** Matplotlib, Seaborn
-
----
-
-## 📁 Project Structure
 ```
 ozone-watch/
-│
+├── .gitignore
+├── README.md
+├── app.py                   # Streamlit web application
 ├── data/
-│   └── ozone-level-8hr.arff    # Raw dataset
-│
-├── ozone_watch.ipynb            # Full ML pipeline notebook
-├── app.py                       # Streamlit web application
-├── model.pkl                    # Saved trained model
-├── features.pkl                 # Feature columns
-├── requirements.txt             # Python dependencies
-└── README.md
+│   └── ozone-level-8hr.arff # Source dataset (OpenML, 2534 rows, 73 features)
+├── features.pkl             # Pickled feature preprocessor (ColumnTransformer / StandardScaler)
+├── model.pkl                # Pickled trained XGBoost model
+├── ozone_watch.ipynb        # Full ML workflow: EDA, SMOTE, training, SHAP, threshold tuning
+├── requirements.txt
+└── LICENSE
 ```
 
 ---
 
-## ⚡ Run Locally
+## Installation
 
-**Prerequisites:** Python 3.8+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Manan-55/ozone-watch.git
+   cd ozone-watch
+   ```
 
+2. **Create a virtual environment (recommended):**
+   ```bash
+   python -m venv venv
+   # Windows
+   .\venv\Scripts\activate
+   # macOS/Linux
+   source venv/bin/activate
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+---
+
+## Usage
+
+**Run the app locally:**
 ```bash
-git clone https://github.com/Manan-55/ozone-watch.git
-cd ozone-watch
-pip install -r requirements.txt
 streamlit run app.py
 ```
+The app will be accessible at `http://localhost:8501` in your browser.
 
-The app will open at `http://localhost:8501` and fetch real-time Houston weather to make predictions.
+**Or visit the live deployment directly:**
+👉 [ozonewatch.streamlit.app](https://ozonewatch.streamlit.app)
 
----
-
-## 💡 Key Insights
-1. **Accuracy is misleading** — 94% accuracy achievable by predicting Normal always. Used F1 and Recall instead.
-2. **SMOTE over random oversampling** — creates synthetic realistic samples preserving data distribution
-3. **Recall > Precision for public health** — missing an ozone day is more dangerous than a false alarm
-4. **Solar radiation is the strongest predictor** — aligns with known science that sunlight triggers ozone formation
-5. **Real-time integration matters** — predictions are only useful if deployed with live data
+**Explore the ML workflow:**
+```bash
+jupyter notebook ozone_watch.ipynb
+```
 
 ---
 
-## 👤 Author
+## Tech Stack
+
+| Layer         | Technology                          |
+|---------------|-------------------------------------|
+| ML Model      | XGBoost, scikit-learn               |
+| Imbalance     | SMOTE (imbalanced-learn)            |
+| Explainability| SHAP                                |
+| Live Data     | Open-Meteo API                      |
+| Frontend      | Streamlit                           |
+| Dataset       | ozone-level-8hr (OpenML, ARFF)      |
+
+---
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
+---
+
+## Contact
+
 **Manan Prajapati**
-- 📧 mananprajapati82@gmail.com
-- 💼 [LinkedIn](https://linkedin.com/in/manan-prajapati-bb4757319)
-- 🐙 [GitHub](https://github.com/Manan-55)
+GitHub: [@Manan-55](https://github.com/Manan-55)
