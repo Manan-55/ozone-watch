@@ -6,6 +6,8 @@
 
 ## 🚀 Live Demo
 
+*Deployment link coming soon — build and share your own with Streamlit!*
+
 ---
 
 ## 🎯 Problem Statement
@@ -59,6 +61,14 @@ Houston, Texas records 60+ ozone alert days per year. Ground-level ozone causes 
 
 ---
 
+## 📈 Final Results
+- **Test Recall:** 91% (catches 30 out of 33 dangerous ozone days)
+- **Test Precision:** 27% (accepts false alarms to prioritize public safety)
+- **Key Insight:** Solar radiation is the strongest predictor, aligning with atmospheric science
+- **Deployment Status:** Ready for real-time predictions on current Houston weather
+
+---
+
 ## 🛠️ Tech Stack
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
 ![Scikit-learn](https://img.shields.io/badge/Scikit--learn-ML-orange)
@@ -86,12 +96,16 @@ ozone-watch/
 ├── app.py                       # Streamlit web application
 ├── model.pkl                    # Saved trained model
 ├── features.pkl                 # Feature columns
+├── requirements.txt             # Python dependencies
 └── README.md
 ```
 
 ---
 
 ## ⚡ Run Locally
+
+**Prerequisites:** Python 3.8+
+
 ```bash
 git clone https://github.com/Manan-55/ozone-watch.git
 cd ozone-watch
@@ -99,13 +113,16 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
+The app will open at `http://localhost:8501` and fetch real-time Houston weather to make predictions.
+
 ---
 
 ## 💡 Key Insights
 1. **Accuracy is misleading** — 94% accuracy achievable by predicting Normal always. Used F1 and Recall instead.
 2. **SMOTE over random oversampling** — creates synthetic realistic samples preserving data distribution
-3. **Recall > Precision** for public health — missing an ozone day is more dangerous than a false alarm
+3. **Recall > Precision for public health** — missing an ozone day is more dangerous than a false alarm
 4. **Solar radiation is the strongest predictor** — aligns with known science that sunlight triggers ozone formation
+5. **Real-time integration matters** — predictions are only useful if deployed with live data
 
 ---
 
